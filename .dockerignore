@@ -1,0 +1,8 @@
+.git
+node_modules
+target
+*.log
+*.md
+server.js
+package.json
+package-lock.json

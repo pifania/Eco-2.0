@@ -1065,7 +1065,7 @@ async function tryLoadRealPlants(){
   if(!saved) return;
   const u = JSON.parse(saved);
   try{
-    const res = await fetch(`http://localhost:8080/api/plantas/usuario/${u.id}`);
+    const res = await fetch(`/api/plantas/usuario/${u.id}`);
     if(!res.ok) return;
     const data = await res.json();
     if(data && data.length > 0){

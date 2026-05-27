@@ -506,7 +506,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);c
 </div>
 
 <script>
-const API = 'http://localhost:8080/api';
+const API = '/api';
 let usuario = null;
 
 /* ── AUTH GUARD ── */
@@ -701,7 +701,7 @@ async function loadPlantas(){
     grid.innerHTML = `
       <div class="error-state">
         <p>⚠️ Não foi possível carregar suas plantas.</p>
-        <small>Verifique se o backend está rodando em localhost:8080</small>
+        <small>Verifique se o servidor está funcionando corretamente</small>
       </div>`;
     updateMetrics([]);
   } finally {
