@@ -193,10 +193,13 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);c
 
 /* responsive */
 @media(max-width:768px){
-  .page{grid-template-columns:1fr}
+  .page{grid-template-columns:1fr; height: auto; min-height: 100vh;}
   .left{display:none}
-  .right{padding:2rem 1.5rem}
-  html,body{overflow:auto}
+  .right{padding:3rem 1.5rem; height: auto; min-height: 100vh; justify-content: center;}
+  html,body{overflow-y:auto; height: auto;}
+}
+@media(max-width:480px){
+  .field-row{grid-template-columns:1fr}
 }
 
 /* ── STAGGERED ENTRY ANIMATION ── */

@@ -301,11 +301,57 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);c
 .skel-line{height:12px;margin-bottom:10px}
 .skel-line.w60{width:60%}.skel-line.w40{width:40%}.skel-line.w80{width:80%}.skel-line.w30{width:30%}
 
+.mobile-only { display: none !important; }
+.sidebar-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  line-height: 1;
+}
 @media(max-width:900px){
   :root{--sidebar:0px}
-  .sidebar{transform:translateX(-100%)}
+  .sidebar{transform:translateX(-100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);}
+  .sidebar.open{transform:translateX(0);}
   .main{margin-left:0;padding:1.5rem 1rem}
   .metrics{grid-template-columns:repeat(2,1fr)}
+  .mobile-only { display: flex !important; }
+}
+@media(max-width:600px){
+  .section-header {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .section-header > div {
+    flex-direction: column;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  #plant-search {
+    width: 100% !important;
+  }
+  .filter-container {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .filter-container::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-container .fbadge {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+@media(max-width:480px){
+  .metrics{grid-template-columns:1fr}
 }
 
 /* ── CURSOR GLOW ── */
@@ -358,6 +404,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);c
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
+  <button class="sidebar-close mobile-only" onclick="toggleSidebar()">×</button>
   <a href="index.html" class="sb-logo" style="display:flex; align-items:center; gap:8px; text-decoration:none; margin-bottom:2rem;">
     <svg viewBox="0 0 100 100" style="width:28px; height:28px; overflow:visible; filter:drop-shadow(0 0 6px rgba(16,185,129,0.35));">
       <circle cx="50" cy="50" r="42" fill="none" stroke="var(--primary)" stroke-width="6" />
@@ -400,9 +447,14 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);c
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <div>
-      <div class="topbar-title">Dashboard</div>
-      <div class="topbar-sub" id="topbar-sub">Bem-vindo de volta!</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button id="mobile-menu-toggle" class="theme-btn mobile-only" aria-label="Menu" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" style="position:static; width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2;"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="topbar-title">Dashboard</div>
+        <div class="topbar-sub" id="topbar-sub">Bem-vindo de volta!</div>
+      </div>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
       <button id="theme-toggle" class="theme-btn" aria-label="Alternar tema">
@@ -430,7 +482,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);c
       <div class="section-title">Minhas Plantas</div>
       <div style="display:flex; align-items:center; gap: 8px;">
         <input type="text" id="plant-search" placeholder="Buscar planta..." oninput="filterPlants()">
-        <div style="display:flex; gap: 4px;">
+        <div class="filter-container" style="display:flex; gap: 4px;">
           <button class="fbadge active" data-filter="TODAS" onclick="setFilter('TODAS')">Todas</button>
           <button class="fbadge" data-filter="SAUDAVEL" onclick="setFilter('SAUDAVEL')">Saudáveis</button>
           <button class="fbadge" data-filter="ALERTA" onclick="setFilter('ALERTA')">Atenção</button>
@@ -1032,6 +1084,22 @@ function getSparklineSvg(currentVal, status) {
     });
   }
 })();
+
+/* ── MOBILE SIDEBAR TOGGLE ── */
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  sb.classList.toggle('open');
+}
+
+// Close sidebar when clicking any navigation link (useful for mobile)
+document.querySelectorAll('.sb-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const sb = document.querySelector('.sidebar');
+    if (sb.classList.contains('open')) {
+      sb.classList.remove('open');
+    }
+  });
+});
 
 loadPlantas();
 setInterval(loadPlantas, 30000);
