@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoGrow — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* FOREST DARK THEME (Padrão) */
+  --bg-deep: #050d09;
+  --bg-main: #0a1711;
+  --bg-card: rgba(16, 37, 26, 0.65);
+  --text-main: #f0faf3;
+  --text-muted: #8fa096;
+  --border-color: rgba(216, 243, 220, 0.08);
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.35);
+  --accent: #00ff87;
+  
+  --g900:#0a1711;--g800:#10251a;--g700:#1c3c2b;--g500:#2d6a4f;
+  --g300:#52b788;--g100:#b7e4c7;--g50:#d8f3dc;
+  --cream:#0a1711;--text:#f0faf3;--muted:#8fa096;--border:rgba(216, 243, 220, 0.08);
+  --sidebar:220px;
+}
+[data-theme="light"] {
+  /* SAGE LIGHT THEME */
+  --bg-deep: #f4f3ef;
+  --bg-main: #fcfbfa;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-main: #142119;
+  --text-muted: #5c6c63;
+  --border-color: rgba(20, 33, 25, 0.08);
+  --primary: #2d6a4f;
+  --primary-glow: rgba(45, 106, 79, 0.2);
+  --accent: #40916c;
+
+  --g900:#1a3d2b;--g800:#2d6a4f;--g700:#40916c;--g500:#52b788;
+  --g300:#74c69d;--g100:#d8f3dc;--g50:#f0faf3;
+  --cream:#fcfbfa;--text:#142119;--muted:#5c6c63;--border:rgba(20,33,25,0.08);
+}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg-deep);color:var(--text-main);transition:background-color 0.4s, color 0.4s;overflow-x:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--sidebar);
+  background:#050d09;display:flex;flex-direction:column;
+  padding:1.5rem 1.25rem;z-index:100;
+  border-right: 1px solid var(--border-color);
+  transition:background-color 0.4s;
+}
+[data-theme="light"] .sidebar{background:#1a3d2b}
+.sb-logo{
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:1.3rem;
+  color:#fff;text-decoration:none;letter-spacing:-0.02em;
+  padding:0 0.25rem;margin-bottom:2rem;display:block;
+}
+.sb-logo em{color:var(--primary);font-style:normal}
+
+.sb-label{font-size:0.6rem;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em;padding:0 0.5rem;margin-bottom:8px;margin-top:1.5rem}
+.sb-nav{display:flex;flex-direction:column;gap:4px}
+.sb-link{
+  display:flex;align-items:center;gap:10px;
+  padding:0.6rem 0.75rem;border-radius:8px;
+  font-size:0.82rem;color:rgba(255,255,255,0.45);
+  text-decoration:none;cursor:pointer;border:none;background:none;
+  width:100%;text-align:left;transition:all 0.2s;
+}
+.sb-link:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75)}
+.sb-link.active{background:var(--primary);color:#fff}
+.sb-link svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.sb-bottom{margin-top:auto}
+.sb-user{
+  display:flex;align-items:center;gap:10px;
+  padding:0.75rem;background:rgba(255,255,255,0.05);
+  border-radius:10px;margin-bottom:10px;
+}
+.sb-avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:600;color:#fff;flex-shrink:0;
+}
+.sb-user-info{min-width:0}
+.sb-user-name{font-size:0.8rem;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-tag{font-size:0.62rem;color:rgba(255,255,255,0.3)}
+.btn-logout{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:0.6rem 0.75rem;border:none;background:rgba(239,68,68,0.08);
+  color:rgba(239,68,68,0.7);border-radius:8px;font-size:0.78rem;
+  font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;text-align:left;
+}
+.btn-logout:hover{background:rgba(239,68,68,0.15);color:#ef4444}
+.btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);min-height:100vh;padding:2rem 2.25rem;background:var(--bg-main);transition:background-color 0.4s}
+
+/* topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
+.topbar-title{font-family:'Outfit',sans-serif;font-weight:500;font-size:1.6rem;letter-spacing:-0.02em;color:var(--text-main)}
+.topbar-sub{font-size:0.8rem;color:var(--text-muted);margin-top:2px}
+.btn-add{
+  display:flex;align-items:center;gap:8px;
+  background:var(--primary);color:#fff;border:none;
+  padding:0.65rem 1.25rem;border-radius:8px;
+  font-size:0.85rem;font-family:'Inter',sans-serif;font-weight:500;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-add:hover{background:var(--g700);transform:translateY(-1px)}
+.btn-add svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── METRIC CARDS ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.metric-card{
+  background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;
+  padding:1.25rem;transition:all 0.2s;color:var(--text-main);backdrop-filter:blur(8px);
+}
+.metric-card:hover{transform:translateY(-2px);border-color:var(--primary)}
+.mc-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px}
+.mc-num{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:500;letter-spacing:-0.03em;color:var(--text)}
+.mc-sub{font-size:0.7rem;color:var(--muted);margin-top:4px}
+.mc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+
+/* ── PLANTS GRID ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.section-title{font-family:'Outfit',sans-serif;font-weight:500;font-size:1.1rem;color:var(--text)}
+.refresh-btn{
+  display:flex;align-items:center;gap:6px;
+  background:none;border:1px solid var(--border);
+  padding:0.45rem 0.85rem;border-radius:7px;
+  font-size:0.75rem;color:var(--muted);cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all 0.2s;
+}
+.refresh-btn:hover{border-color:var(--g500);color:var(--g700)}
+.refresh-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.refresh-btn.spinning svg{animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.plants-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+
+/* empty state */
+.empty-state{
+  grid-column:1/-1;text-align:center;
+  padding:4rem 2rem;background:var(--bg-card);border:1px dashed var(--border-color);
+  border-radius:12px;color:var(--text-muted);
+  backdrop-filter:blur(8px);
+}
+.empty-state svg{width:40px;height:40px;stroke:var(--primary);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-bottom:12px}
+.empty-state p{font-size:0.875rem;margin-bottom:1rem;color:var(--text-main)}
+.empty-state button{
+  background:var(--primary);color:#fff;border:none;
+  padding:0.6rem 1.2rem;border-radius:8px;
+  font-size:0.85rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;
+}
+.empty-state button:hover{background:var(--g700);transform:translateY(-1px)}
+
+/* error state */
+.error-state{
+  grid-column:1/-1;text-align:center;
+  padding:3rem 2rem;background:#fff;border:1px solid #fee2e2;
+  border-radius:12px;color:#ef4444;
+}
+.error-state p{font-size:0.85rem;margin-bottom:0.5rem}
+.error-state small{color:var(--muted);font-size:0.75rem}
+
+/* plant card */
+.plant-card{
+  background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;
+  padding:1.25rem;transition:all 0.3s;
+  animation:fadeIn 0.4s ease;
+  backdrop-filter:blur(8px);
+  color:var(--text-main);
+}
+.plant-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.12);border-color:var(--primary)}
+
+/* ── THEME BUTTON ── */
+.theme-btn{
+  background:transparent; border:1px solid var(--border-color, var(--border));
+  color:var(--text-main); width:36px; height:36px; border-radius:8px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; position:relative; overflow:hidden;
+}
+.theme-btn:hover{ border-color:var(--primary); color:var(--primary); }
+.theme-btn svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition: transform 0.4s ease, opacity 0.4s ease; position:absolute; }
+.theme-btn .sun{ opacity:0; transform: translateY(18px); }
+.theme-btn .moon{ opacity:1; transform: translateY(0); }
+[data-theme="light"] .theme-btn .sun{ opacity:1; transform: translateY(0); }
+[data-theme="light"] .theme-btn .moon{ opacity:0; transform: translateY(-18px); }
+.plant-card.removing{animation:fadeOut 0.35s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{to{opacity:0;transform:scale(0.95)}}
+
+.pc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.pc-name{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:500;color:var(--text);margin-bottom:2px}
+.pc-esp{font-size:0.7rem;color:var(--muted)}
+.status-badge{font-size:0.62rem;font-weight:600;padding:3px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap}
+.s-SAUDAVEL{background:#dcfce7;color:#166534}
+.s-ALERTA{background:#fef9c3;color:#854d0e}
+.s-CRITICO{background:#fee2e2;color:#991b1b}
+.s-default{background:#f3f4f6;color:#6b7280}
+
+.pc-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+.pc-metric{background:#fafaf8;border-radius:8px;padding:8px;text-align:center}
+.pcm-val{font-size:0.9rem;font-weight:500;margin-bottom:2px}
+.pcm-lbl{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+.c-green{color:#16a34a}.c-amber{color:#d97706}.c-blue{color:#3b82f6}
+
+.pc-bar{margin-bottom:6px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--muted);margin-bottom:4px}
+.bar-track{background:#f0f0ea;border-radius:4px;height:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
+
+.pc-actions{display:flex;gap:8px;margin-top:1rem}
+.btn-irrigar{
+  flex:1;padding:0.55rem;border:none;background:var(--g100);
+  color:var(--g700);border-radius:7px;font-size:0.78rem;
+  font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-irrigar:hover:not(:disabled){background:var(--g300);color:var(--g900)}
+.btn-irrigar:disabled{opacity:0.5;cursor:not-allowed}
+.btn-irrigar svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-remover{
+  padding:0.55rem 0.75rem;border:1px solid #fee2e2;background:transparent;
+  color:#ef4444;border-radius:7px;font-size:0.78rem;cursor:pointer;
+  transition:all 0.2s;display:flex;align-items:center;gap:5px;
+  font-family:'Inter',sans-serif;
+}
+.btn-remover:hover{background:#fee2e2}
+.btn-remover svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── TOAST ── */
+.toast-area{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{
+  background:#1a1a1a;color:#fff;padding:0.75rem 1.1rem;
+  border-radius:10px;font-size:0.8rem;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  animation:toastIn 0.3s ease;pointer-events:auto;
+}
+.toast.toast-success{border-left:3px solid #22c55e}
+.toast.toast-error{border-left:3px solid #ef4444}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(13, 40, 24, 0.45);
+  z-index:500;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:2rem;
+  width:100%;max-width:460px;max-height:90vh;overflow-y:auto;
+  transform:scale(0.92) translateY(12px);
+  transition:transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter:blur(16px);
+  color:var(--text-main);
+}
+.modal-overlay.open .modal{
+  transform:scale(1) translateY(0);
+}
+.modal-title{font-family:'Outfit',sans-serif;font-size:1.3rem;font-weight:500;color:var(--text);margin-bottom:4px}
+.modal-sub{font-size:0.8rem;color:var(--muted);margin-bottom:1.5rem}
+.modal-close{float:right;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);margin-top:-4px}
+
+.mfield{margin-bottom:1rem}
+.mfield label{display:block;font-size:0.78rem;font-weight:500;color:var(--text);margin-bottom:6px}
+.mfield input,.mfield select{
+  width:100%;padding:0.65rem 0.85rem;border:1px solid var(--border-color);
+  border-radius:8px;font-family:'Inter',sans-serif;font-size:0.875rem;
+  background:var(--bg-card);color:var(--text-main);outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+}
+.mfield input:focus,.mfield select:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(64,145,108,0.12)}
+.mfield input::placeholder{color:#c0c0b8}
+.mfield-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.modal-actions{display:flex;gap:10px;margin-top:1.5rem}
+.btn-modal-cancel{
+  flex:1;padding:0.7rem;border:1px solid var(--border);background:#fff;
+  color:var(--text);border-radius:8px;font-family:'Inter',sans-serif;
+  font-size:0.875rem;cursor:pointer;transition:border-color 0.2s;
+}
+.btn-modal-cancel:hover{border-color:var(--g500)}
+.btn-modal-save{
+  flex:2;padding:0.7rem;background:var(--g800);color:#fff;border:none;
+  border-radius:8px;font-family:'Inter',sans-serif;font-size:0.875rem;
+  font-weight:500;cursor:pointer;transition:background 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-modal-save:hover:not(:disabled){background:var(--g900)}
+.btn-modal-save:disabled{opacity:0.6;cursor:not-allowed}
+.modal-spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:none}
+
+/* ── LOADING SKELETON ── */
+.skeleton{background:linear-gradient(90deg,#f0f0ec 25%,#e8e8e4 50%,#f0f0ec 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem;height:220px}
+.skel-line{height:12px;margin-bottom:10px}
+.skel-line.w60{width:60%}.skel-line.w40{width:40%}.skel-line.w80{width:80%}.skel-line.w30{width:30%}
+
+@media(max-width:900px){
+  :root{--sidebar:0px}
+  .sidebar{transform:translateX(-100%)}
+  .main{margin-left:0;padding:1.5rem 1rem}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── CURSOR GLOW ── */
+.cursor-glow{position:fixed;pointer-events:none;z-index:0;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(45,106,79,0.045) 0%,transparent 65%);transform:translate(-50%,-50%);will-change:left,top;transition:opacity 0.5s}
+
+/* ── FILTER BADGES & SEARCH ── */
+.fbadge{
+  border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-muted);
+  padding:0.45rem 0.75rem;border-radius:8px;font-size:0.75rem;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;
+}
+.fbadge:hover{border-color:var(--primary);color:var(--text-main)}
+.fbadge.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+#plant-search{
+  padding:0.45rem 0.85rem;border:1px solid var(--border-color);border-radius:8px;
+  font-size:0.8rem;outline:none;background:var(--bg-card);color:var(--text-main);width:160px;transition:all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  font-family:'Inter',sans-serif;
+}
+#plant-search:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow);width:200px}
+
+/* ── WATERING RIPPLE ANIMATION ── */
+.bar-track{position:relative}
+.bar-fill.watering{
+  position:relative;
+  overflow:hidden;
+}
+.bar-fill.watering::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+  transform:translateX(-100%);
+  animation:waterRipple 1.2s infinite;
+}
+@keyframes waterRipple{
+  100%{transform:translateX(100%)}
+}
+
+/* ── GAUGE STYLES ── */
+.gauge {
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.gauge-fill {
+  transition: stroke-dasharray 0.8s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sb-logo" style="display:flex; align-items:center; gap:8px; text-decoration:none; margin-bottom:2rem;">
+    <svg viewBox="0 0 100 100" style="width:28px; height:28px; overflow:visible; filter:drop-shadow(0 0 6px rgba(16,185,129,0.35));">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--primary)" stroke-width="6" />
+      <path d="M50 25 C35 38 38 60 50 75 C62 60 65 38 50 25 Z" fill="var(--primary)" />
+      <path d="M50 40 C43 48 45 60 50 70 C55 60 57 48 50 40 Z" fill="var(--accent)" />
+      <circle cx="50" cy="72" r="4" fill="#fff" />
+    </svg>
+    <span style="font-family:'Outfit',sans-serif; font-weight:600; font-size:1.25rem; color:#fff; letter-spacing:-0.02em;">Eco<em style="color:var(--primary); font-style:normal; font-weight:300;">Grow</em></span>
+  </a>
+
+  <div class="sb-label">Menu</div>
+  <nav class="sb-nav">
+    <button class="sb-link active">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </button>
+    <button class="sb-link" onclick="openModal()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Minhas Plantas
+    </button>
+  </nav>
+
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-avatar">?</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name" id="sb-name">Carregando...</div>
+        <div class="sb-user-tag">Conta pessoal</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sair da conta
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-sub" id="topbar-sub">Bem-vindo de volta!</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button id="theme-toggle" class="theme-btn" aria-label="Alternar tema">
+        <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn-add" onclick="openModal()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar planta
+      </button>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics" id="metrics">
+    <div class="metric-card"><div class="mc-label">Total de plantas</div><div class="mc-num" id="mc-total">—</div><div class="mc-sub">cadastradas</div></div>
+    <div class="metric-card"><div class="mc-label">Saudáveis</div><div class="mc-num" id="mc-ok" style="color:#16a34a">—</div><div class="mc-sub"><span class="mc-dot" style="background:#22c55e"></span>em ótimo estado</div></div>
+    <div class="metric-card"><div class="mc-label">Em atenção</div><div class="mc-num" id="mc-warn" style="color:#d97706">—</div><div class="mc-sub"><span class="mc-dot" style="background:#fbbf24"></span>precisam de cuidado</div></div>
+    <div class="metric-card"><div class="mc-label">Críticas</div><div class="mc-num" id="mc-crit" style="color:#dc2626">—</div><div class="mc-sub"><span class="mc-dot" style="background:#ef4444"></span>atenção urgente</div></div>
+  </div>
+
+  <!-- PLANTS -->
+  <div class="section-header" style="flex-wrap: wrap; gap: 1rem;">
+    <div style="display:flex; align-items:center; gap: 1.5rem; flex-wrap: wrap;">
+      <div class="section-title">Minhas Plantas</div>
+      <div style="display:flex; align-items:center; gap: 8px;">
+        <input type="text" id="plant-search" placeholder="Buscar planta..." oninput="filterPlants()">
+        <div style="display:flex; gap: 4px;">
+          <button class="fbadge active" data-filter="TODAS" onclick="setFilter('TODAS')">Todas</button>
+          <button class="fbadge" data-filter="SAUDAVEL" onclick="setFilter('SAUDAVEL')">Saudáveis</button>
+          <button class="fbadge" data-filter="ALERTA" onclick="setFilter('ALERTA')">Atenção</button>
+          <button class="fbadge" data-filter="CRITICO" onclick="setFilter('CRITICO')">Críticas</button>
+        </div>
+      </div>
+    </div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadPlantas()">
+      <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Atualizar
+    </button>
+  </div>
+  <div class="plants-grid" id="plants-grid">
+    <!-- Skeletons enquanto carrega -->
+    <div class="skel-card"><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40" style="margin-top:6px"></div></div>
+    <div class="skel-card"><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w30" style="margin-top:6px"></div></div>
+    <div class="skel-card"><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w50" style="margin-top:6px"></div></div>
+  </div>
+
+</main>
+
+<!-- TOAST AREA -->
+<div class="toast-area" id="toast-area"></div>
+
+<!-- MODAL ADICIONAR PLANTA -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title">Nova planta</div>
+    <p class="modal-sub">Preencha os dados da sua planta para cadastrá-la.</p>
+    <form id="form-planta" onsubmit="handleAddPlanta(event)">
+      <div class="mfield">
+        <label>Nome da planta *</label>
+        <input type="text" id="p-nome" placeholder="Ex: Meu Manjericão" required>
+      </div>
+      <div class="mfield">
+        <label>Espécie</label>
+        <input type="text" id="p-especie" placeholder="Ex: Ocimum basilicum">
+      </div>
+      <div class="mfield-row">
+        <div class="mfield">
+          <label>Umidade (%)</label>
+          <input type="number" id="p-umidade" placeholder="50" min="0" max="100" step="0.1">
+        </div>
+        <div class="mfield">
+          <label>Temperatura (°C)</label>
+          <input type="number" id="p-temp" placeholder="25" min="0" max="60" step="0.1">
+        </div>
+      </div>
+      <div class="mfield-row">
+        <div class="mfield">
+          <label>Luminosidade (lux)</label>
+          <input type="number" id="p-lux" placeholder="800" min="0" step="1">
+        </div>
+        <div class="mfield">
+          <label>Status inicial</label>
+          <select id="p-status">
+            <option value="SAUDAVEL">🌿 Saudável</option>
+            <option value="ALERTA">⚠️ Atenção</option>
+            <option value="CRITICO">🚨 Crítico</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn-modal-save" id="btn-save">
+          <span class="modal-spinner" id="modal-spinner"></span>
+          <span id="btn-save-text">Cadastrar planta</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8080/api';
+let usuario = null;
+
+/* ── AUTH GUARD ── */
+(function(){
+  const saved = localStorage.getItem('ecogrow_user');
+  if(!saved){ window.location.href = 'login.html'; return; }
+  usuario = JSON.parse(saved);
+  const initials = usuario.nome.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('sb-name').textContent = usuario.nome;
+  document.getElementById('topbar-sub').textContent = `Olá, ${usuario.nome.split(' ')[0]}! Aqui estão suas plantas.`;
+})();
+
+function logout(){
+  localStorage.removeItem('ecogrow_user');
+  window.location.href = 'index.html';
+}
+
+/* ── TOAST ── */
+function showToast(msg, type='success'){
+  const area = document.getElementById('toast-area');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  area.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(8px)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(), 300); }, 3000);
+}
+
+/* ── STATUS HELPERS ── */
+function statusClass(s){ return 's-' + (s || 'default'); }
+function statusLabel(s){
+  const m = {SAUDAVEL:'Saudável', ALERTA:'Atenção', CRITICO:'Crítico'};
+  return m[s] || (s || 'N/A');
+}
+function umidadeColor(u){
+  if(u === null || u === undefined) return '#9ca3af';
+  if(u >= 60) return '#16a34a';
+  if(u >= 30) return '#d97706';
+  return '#dc2626';
+}
+function healthPct(p){
+  // calcula saúde relativa baseada no status e umidade
+  if(p.status === 'SAUDAVEL') return Math.min(100, 70 + (p.umidade||50)*0.3);
+  if(p.status === 'ALERTA')   return Math.min(69, 35 + (p.umidade||30)*0.5);
+  return Math.min(34, (p.umidade||10)*0.8);
+}
+
+/* ── RENDER PLANT CARD ── */
+function renderCard(p){
+  const umid = p.umidade !== null && p.umidade !== undefined ? p.umidade.toFixed(1) : '—';
+  const temp = p.temperatura !== null && p.temperatura !== undefined ? p.temperatura.toFixed(1) : '—';
+  const lux  = p.luminosidade !== null && p.luminosidade !== undefined ? Math.round(p.luminosidade) : '—';
+  const umidNum = parseFloat(umid) || 0;
+  const tempNum = parseFloat(temp) || 0;
+  const luxNum  = parseFloat(lux)  || 0;
+  const health = Math.round(healthPct(p));
+  const healthColor = health >= 70 ? '#10b981' : health >= 40 ? '#f59e0b' : '#ef4444';
+
+  const card = document.createElement('div');
+  card.className = 'plant-card';
+  card.id = `card-${p.id}`;
+  card.innerHTML = `
+    <div class="pc-top" style="align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <div class="pc-name">${escHtml(p.nome)}</div>
+        <div class="pc-esp">${escHtml(p.especie || 'Espécie não informada')}</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="ecopet-wrap" style="width:34px; height:34px;">
+          ${getEcoPetSprout(p.status)}
+        </div>
+        <span class="status-badge ${statusClass(p.status)}">${statusLabel(p.status)}</span>
+      </div>
+    </div>
+    
+    ${renderRadialGauges(umid, temp, lux, umidNum, tempNum, luxNum)}
+
+    <div class="pc-bar" style="margin-top: 1rem;">
+      <div class="bar-lbl"><span>Saúde geral</span><span>${health}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${health}%;background:${healthColor}"></div></div>
+    </div>
+
+    ${renderHistoryChart(umidNum, p.status)}
+
+    <div class="pc-actions">
+      <button class="btn-irrigar" id="irr-${p.id}" onclick="irrigar(${p.id})">
+        <svg viewBox="0 0 24 24"><path d="M12 2v6m0 0c0 0-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z"/></svg>
+        Irrigar
+      </button>
+      <button class="btn-remover" onclick="remover(${p.id})">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>
+        Remover
+      </button>
+    </div>
+  `;
+  return card;
+}
+
+function renderRadialGauges(umid, temp, lux, umidNum, tempNum, luxNum) {
+  return `
+    <div class="pc-metrics" style="display:flex; justify-content:space-around; align-items:center; margin-bottom:1rem; gap:10px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+        <svg width="56" height="56" viewBox="0 0 36 36" class="gauge">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2.8" />
+          <path class="gauge-fill" stroke-dasharray="${umid !== '—' ? umidNum : 0}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" style="transition: stroke-dasharray 0.8s ease;" />
+          <text x="18" y="20.5" font-family="'Outfit', sans-serif" font-weight="600" font-size="7" fill="var(--text-main)" text-anchor="middle">${umid !== '—' ? Math.round(umidNum) + '%' : '—'}</text>
+        </svg>
+        <span style="font-size:0.58rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Umidade</span>
+      </div>
+      
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+        <svg width="56" height="56" viewBox="0 0 36 36" class="gauge">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2.8" />
+          <path class="gauge-fill" stroke-dasharray="${temp !== '—' ? Math.min(100, Math.max(0, (tempNum/45)*100)) : 0}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linecap="round" style="transition: stroke-dasharray 0.8s ease;" />
+          <text x="18" y="20.5" font-family="'Outfit', sans-serif" font-weight="600" font-size="7" fill="var(--text-main)" text-anchor="middle">${temp !== '—' ? Math.round(tempNum) + '°' : '—'}</text>
+        </svg>
+        <span style="font-size:0.58rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Temp.</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+        <svg width="56" height="56" viewBox="0 0 36 36" class="gauge">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2.8" />
+          <path class="gauge-fill" stroke-dasharray="${lux !== '—' ? Math.min(100, Math.max(0, (luxNum/1200)*100)) : 0}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" stroke-width="2.8" stroke-linecap="round" style="transition: stroke-dasharray 0.8s ease;" />
+          <text x="18" y="20.5" font-family="'Outfit', sans-serif" font-weight="600" font-size="7" fill="var(--text-main)" text-anchor="middle">${lux !== '—' ? Math.round(luxNum) : '—'}</text>
+        </svg>
+        <span style="font-size:0.58rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Lux</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderHistoryChart(umidNum, status) {
+  return `
+    <div style="margin-top:1.25rem; margin-bottom:1.25rem;">
+      <div style="display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text-muted); margin-bottom:4px;">
+        <span>Histórico de Umidade (5 dias)</span>
+        <span style="color:var(--primary);">Estável</span>
+      </div>
+      <div style="height:34px; width:100%; background:rgba(0,0,0,0.08); border-radius:6px; overflow:hidden; padding:2px 0;">
+        ${getSparklineSvg(umidNum, status)}
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+/* ── UPDATE METRICS ── */
+function updateMetrics(plantas){
+  document.getElementById('mc-total').textContent = plantas.length;
+  document.getElementById('mc-ok').textContent   = plantas.filter(p=>p.status==='SAUDAVEL').length;
+  document.getElementById('mc-warn').textContent = plantas.filter(p=>p.status==='ALERTA').length;
+  document.getElementById('mc-crit').textContent = plantas.filter(p=>p.status==='CRITICO').length;
+}
+
+/* ── LOAD PLANTAS ── */
+async function loadPlantas(){
+  const grid = document.getElementById('plants-grid');
+  const btn  = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+
+  // show skeletons
+  grid.innerHTML = `
+    <div class="skel-card"><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40" style="margin-top:8px"></div></div>
+    <div class="skel-card"><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w30" style="margin-top:8px"></div></div>
+    <div class="skel-card"><div class="skeleton skel-line w50"></div><div class="skeleton skel-line w60" style="margin-top:8px"></div></div>
+  `;
+
+  try{
+    const res = await fetch(`${API}/plantas/usuario/${usuario.id}`);
+    if(!res.ok) throw new Error('API error');
+    const plantas = await res.json();
+
+    grid.innerHTML = '';
+    updateMetrics(plantas);
+
+    if(plantas.length === 0){
+      grid.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/><path d="M12 8v4m0 4h.01"/></svg>
+          <p>Você ainda não tem plantas cadastradas.</p>
+          <button onclick="openModal()">Adicionar primeira planta</button>
+        </div>`;
+    } else {
+      plantas.forEach(p => {
+        const card = renderCard(p);
+        grid.appendChild(card);
+        applyTilt(card);
+      });
+    }
+  } catch(err){
+    grid.innerHTML = `
+      <div class="error-state">
+        <p>⚠️ Não foi possível carregar suas plantas.</p>
+        <small>Verifique se o backend está rodando em localhost:8080</small>
+      </div>`;
+    updateMetrics([]);
+  } finally {
+    btn.classList.remove('spinning');
+    filterPlants();
+  }
+}
+
+/* ── IRRIGAR ── */
+async function irrigar(id){
+  const btn = document.getElementById(`irr-${id}`);
+  if(!btn) return;
+  btn.disabled = true;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;animation:spin 0.7s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Irrigando...`;
+
+  const card = document.getElementById(`card-${id}`);
+  if(card){
+    const fills = card.querySelectorAll('.bar-fill');
+    if(fills.length >= 2){
+      fills[1].classList.add('watering');
+    }
+  }
+
+  try{
+    const res = await fetch(`${API}/plantas/${id}/irrigar`, { method:'POST' });
+    if(!res.ok) throw new Error();
+    showToast('💧 Irrigação realizada com sucesso!');
+    await loadPlantas();
+  } catch{
+    showToast('Erro ao irrigar. Tente novamente.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><path d="M12 2v6m0 0c0 0-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z"/></svg> Irrigar`;
+  }
+}
+
+/* ── REMOVER ── */
+async function remover(id){
+  if(!confirm('Tem certeza que deseja remover esta planta?')) return;
+  const card = document.getElementById(`card-${id}`);
+  if(card) card.classList.add('removing');
+
+  try{
+    const res = await fetch(`${API}/plantas/${id}`, { method:'DELETE' });
+    if(!res.ok) throw new Error();
+    showToast('🗑️ Planta removida.');
+    setTimeout(()=> loadPlantas(), 350);
+  } catch{
+    if(card) card.classList.remove('removing');
+    showToast('Erro ao remover planta.', 'error');
+  }
+}
+
+/* ── MODAL ── */
+function openModal(){
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('form-planta').reset();
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function closeModalOnBg(e){
+  if(e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+async function handleAddPlanta(e){
+  e.preventDefault();
+  const saveBtn = document.getElementById('btn-save');
+  const spinner = document.getElementById('modal-spinner');
+  const saveText = document.getElementById('btn-save-text');
+
+  saveBtn.disabled = true;
+  spinner.style.display = 'block';
+  saveText.textContent = 'Salvando...';
+
+  const body = {
+    nome:         document.getElementById('p-nome').value.trim(),
+    especie:      document.getElementById('p-especie').value.trim() || null,
+    umidade:      parseFloat(document.getElementById('p-umidade').value) || null,
+    temperatura:  parseFloat(document.getElementById('p-temp').value) || null,
+    luminosidade: parseFloat(document.getElementById('p-lux').value) || null,
+    status:       document.getElementById('p-status').value,
+    usuario:      { id: usuario.id }
+  };
+
+  try{
+    const res = await fetch(`${API}/plantas`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error();
+    showToast('🌿 Planta cadastrada com sucesso!');
+    closeModal();
+    loadPlantas();
+  } catch{
+    showToast('Erro ao cadastrar planta.', 'error');
+  } finally {
+    saveBtn.disabled = false;
+    spinner.style.display = 'none';
+    saveText.textContent = 'Cadastrar planta';
+  }
+}
+
+/* ── DUST / GLOW & TILT ── */
+(function(){
+  // Cursor glow
+  const glow = document.createElement('div');
+  glow.className = 'cursor-glow';
+  document.body.appendChild(glow);
+  let tx = -999, ty = -999, cx = -999, cy = -999;
+  document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+  (function loop() {
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+    glow.style.left = cx + 'px';
+    glow.style.top  = cy + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.addEventListener('mouseleave', () => glow.style.opacity = '0');
+  document.addEventListener('mouseenter', () => glow.style.opacity = '1');
+
+  // Metric cards static tilt
+  document.querySelectorAll('.metric-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      const y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      card.style.transform = `perspective(800px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg) translateY(-2px)`;
+      card.style.borderColor = 'var(--g300)';
+      card.style.transition = 'transform 0.05s ease, border-color 0.05s ease';
+    }, { passive: true });
+    card.style.willChange = 'transform';
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) translateY(0)';
+      card.style.borderColor = '';
+      card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.5s ease';
+    });
+  });
+})();
+
+function applyTilt(card) {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    const y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-3px)`;
+    card.style.boxShadow = `0 12px 28px rgba(0,0,0,0.08)`;
+    card.style.transition = 'transform 0.05s ease, box-shadow 0.05s ease';
+  }, { passive: true });
+  card.style.willChange = 'transform';
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) translateY(0)';
+    card.style.boxShadow = '';
+    card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s ease';
+  });
+}
+
+/* ── SEARCH & FILTERS ── */
+let currentFilter = 'TODAS';
+let searchQuery = '';
+
+function setFilter(filterVal) {
+  currentFilter = filterVal;
+  document.querySelectorAll('.fbadge').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filterVal);
+  });
+  filterPlants();
+}
+
+function filterPlants() {
+  const searchInput = document.getElementById('plant-search');
+  if(!searchInput) return;
+  searchQuery = searchInput.value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.plants-grid .plant-card');
+  
+  let visibleCount = 0;
+  cards.forEach(card => {
+    const statusBadge = card.querySelector('.status-badge');
+    let status = '';
+    if (statusBadge) {
+      if (statusBadge.classList.contains('s-SAUDAVEL')) status = 'SAUDAVEL';
+      else if (statusBadge.classList.contains('s-ALERTA')) status = 'ALERTA';
+      else if (statusBadge.classList.contains('s-CRITICO')) status = 'CRITICO';
+    }
+    
+    const name = card.querySelector('.pc-name').textContent.toLowerCase();
+    const esp = card.querySelector('.pc-esp').textContent.toLowerCase();
+    
+    const matchesSearch = name.includes(searchQuery) || esp.includes(searchQuery);
+    const matchesFilter = currentFilter === 'TODAS' || status === currentFilter;
+    
+    if (matchesSearch && matchesFilter) {
+      card.style.display = 'block';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  
+  const grid = document.getElementById('plants-grid');
+  let existingEmpty = document.getElementById('search-empty-state');
+  
+  if (visibleCount === 0 && cards.length > 0) {
+    if (!existingEmpty) {
+      const empty = document.createElement('div');
+      empty.id = 'search-empty-state';
+      empty.className = 'empty-state';
+      empty.style.gridColumn = '1/-1';
+      empty.innerHTML = `
+        <svg viewBox="0 0 24 24" style="stroke:var(--primary);fill:none;stroke-width:1.5;width:40px;height:40px;margin-bottom:12px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <p>Nenhuma planta corresponde aos filtros aplicados.</p>
+        <button onclick="clearFilters()" style="background:var(--primary);color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.85rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s">Limpar filtros</button>
+      `;
+      grid.appendChild(empty);
+    }
+  } else {
+    if (existingEmpty) existingEmpty.remove();
+  }
+}
+
+function clearFilters() {
+  const searchInput = document.getElementById('plant-search');
+  if(searchInput) searchInput.value = '';
+  setFilter('TODAS');
+}
+
+/* ── ECOPET & SPARKLINE HELPERS ── */
+function getEcoPetSprout(status) {
+  if (status === 'SAUDAVEL') {
+    return `
+      <svg viewBox="0 0 100 100" class="ecopet-sprout healthy" style="width:100%; height:100%; overflow:visible;">
+        <style>
+          .ecopet-sprout.healthy { animation: sway 3s ease-in-out infinite alternate; transform-origin: bottom center; }
+          @keyframes sway { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+        </style>
+        <path d="M35 80 L65 80 L70 95 L30 95 Z" fill="#b45309" />
+        <path d="M50 80 Q52 50 48 30" stroke="#10b981" stroke-width="5" stroke-linecap="round" fill="none" />
+        <path d="M48 50 Q30 45 42 60" fill="#10b981" />
+        <path d="M50 40 Q70 35 58 50" fill="#10b981" />
+        <path d="M48 30 Q36 20 46 32" fill="#059669" />
+        <circle cx="48" cy="24" r="5" fill="#f43f5e" />
+        <circle cx="48" cy="24" r="2" fill="#fef08a" />
+      </svg>
+    `;
+  } else if (status === 'ALERTA') {
+    return `
+      <svg viewBox="0 0 100 100" class="ecopet-sprout warning" style="width:100%; height:100%; overflow:visible;">
+        <style>
+          .ecopet-sprout.warning { animation: swayWarn 2.5s ease-in-out infinite alternate; transform-origin: bottom center; }
+          @keyframes swayWarn { from { transform: rotate(-2deg); } to { transform: rotate(2deg); } }
+        </style>
+        <path d="M35 80 L65 80 L70 95 L30 95 Z" fill="#b45309" />
+        <path d="M50 80 Q45 60 38 42" stroke="#d97706" stroke-width="5" stroke-linecap="round" fill="none" />
+        <path d="M46 62 Q28 62 38 72" fill="#d97706" />
+        <path d="M42 50 Q56 54 44 65" fill="#d97706" />
+      </svg>
+    `;
+  } else {
+    return `
+      <svg viewBox="0 0 100 100" class="ecopet-sprout critical" style="width:100%; height:100%; overflow:visible;">
+        <style>
+          .ecopet-sprout.critical { animation: droop 4s ease-in-out infinite alternate; transform-origin: bottom center; }
+          @keyframes droop { from { transform: translateY(0); } to { transform: translateY(2px); } }
+        </style>
+        <path d="M35 80 L65 80 L70 95 L30 95 Z" fill="#78350f" />
+        <path d="M50 80 Q35 70 30 60 Q25 50 22 45" stroke="#991b1b" stroke-width="4.5" stroke-linecap="round" fill="none" />
+        <path d="M34 68 Q18 72 26 80" fill="#991b1b" />
+        <path d="M26 53 Q14 55 20 62" fill="#7f1d1d" />
+      </svg>
+    `;
+  }
+}
+
+function getSparklineSvg(currentVal, status) {
+  const seed = currentVal || 50;
+  const points = [
+    seed - 6 + Math.random()*4,
+    seed - 3 - Math.random()*5,
+    seed + 4 + Math.random()*6,
+    seed - 1 + Math.random()*3,
+    seed
+  ];
+  
+  const width = 260;
+  const height = 28;
+  const max = 100;
+  const min = 0;
+  
+  const coords = points.map((p, i) => {
+    const x = (i / (points.length - 1)) * width;
+    const y = height - ((p - min) / (max - min)) * height;
+    return { x, y };
+  });
+  
+  let pathStr = `M ${coords[0].x} ${coords[0].y}`;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const cpX = (coords[i].x + coords[i+1].x) / 2;
+    pathStr += ` C ${cpX} ${coords[i].y}, ${cpX} ${coords[i+1].y}, ${coords[i+1].x} ${coords[i+1].y}`;
+  }
+  
+  const color = status === 'SAUDAVEL' ? '#10b981' : status === 'ALERTA' ? '#f59e0b' : '#ef4444';
+  
+  return `
+    <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="display:block; overflow:visible;">
+      <path d="${pathStr} L ${width} ${height} L 0 ${height} Z" fill="url(#grad-${currentVal})" opacity="0.08" />
+      <path d="${pathStr}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" />
+      <defs>
+        <linearGradient id="grad-${currentVal}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" />
+          <stop offset="100%" stop-color="transparent" />
+        </linearGradient>
+      </defs>
+    </svg>
+  `;
+}
+
+/* ── INIT & THEME SYNC ── */
+(function() {
+  const toggleBtn = document.getElementById('theme-toggle');
+  if (toggleBtn) {
+    const currentTheme = localStorage.getItem('ecogrow_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    toggleBtn.addEventListener('click', () => {
+      const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ecogrow_theme', theme);
+    });
+  }
+})();
+
+loadPlantas();
+setInterval(loadPlantas, 30000);
+</script>
+</body>
+</html>

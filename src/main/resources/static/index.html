@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoGrow — Agricultura Urbana Inteligente</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* FOREST DARK THEME (Padrão) */
+  --bg-deep: #050d09;
+  --bg-main: #0a1711;
+  --bg-card: rgba(16, 37, 26, 0.65);
+  --text-main: #f0faf3;
+  --text-muted: #8fa096;
+  --border-color: rgba(216, 243, 220, 0.08);
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.35);
+  --accent: #00ff87;
+  
+  --g900:#0a1711;--g800:#10251a;--g700:#1c3c2b;--g500:#2d6a4f;
+  --g300:#52b788;--g100:#b7e4c7;--g50:#d8f3dc;
+  --cream:#0a1711;--text:#f0faf3;--muted:#8fa096;--border:rgba(216, 243, 220, 0.08);
+  --bg-feat-hover: rgba(16, 185, 129, 0.08);
+}
+[data-theme="light"] {
+  /* SAGE LIGHT THEME */
+  --bg-deep: #f4f3ef;
+  --bg-main: #fcfbfa;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-main: #142119;
+  --text-muted: #5c6c63;
+  --border-color: rgba(20, 33, 25, 0.08);
+  --primary: #2d6a4f;
+  --primary-glow: rgba(45, 106, 79, 0.2);
+  --accent: #40916c;
+
+  --g900:#1a3d2b;--g800:#2d6a4f;--g700:#40916c;--g500:#52b788;
+  --g300:#74c69d;--g100:#d8f3dc;--g50:#f0faf3;
+  --cream:#fcfbfa;--text:#142119;--muted:#5c6c63;--border:rgba(20,33,25,0.08);
+  --bg-feat-hover: var(--g50);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg-deep);color:var(--text-main);overflow-x:hidden}
+body, nav, .hero-left, .plant-card, footer, .feat, .how-card, .counter-card, .cta-box {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+/* Override para tema light: cards opacos e borda suave */
+[data-theme="light"] .feat {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+[data-theme="light"] .feat:hover,
+[data-theme="light"] .feat.active-feat {
+  background: var(--g50);
+  border-color: var(--primary);
+  box-shadow: 0 8px 30px rgba(45,106,79,0.12);
+}
+[data-theme="light"] .feat-icon {
+  background: rgba(45,106,79,0.1);
+}
+
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2.5rem;background:var(--bg-card);
+  border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.logo{font-family:'Outfit',sans-serif;font-weight:600;font-size:1.4rem;color:var(--text);text-decoration:none;letter-spacing:-0.02em}
+.logo em{color:var(--g700);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{font-size:0.85rem;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+.btn-p{background:var(--g800);color:#fff;border:none;padding:0.55rem 1.25rem;border-radius:8px;font-size:0.85rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-p:hover{background:var(--g900);transform:translateY(-1px)}
+.btn-o{background:transparent;color:var(--text);border:1px solid var(--border);padding:0.55rem 1.25rem;border-radius:8px;font-size:0.85rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-o:hover{border-color:var(--g700);color:var(--g700)}
+
+/* ── HERO ── */
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:90vh;position:relative;overflow:hidden}
+.hero-left{padding:5rem 3rem 4rem 2.5rem;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+
+/* animated bg dots */
+.hero-left::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(45,106,79,0.08) 1px,transparent 1px);
+  background-size:28px 28px;z-index:-1;
+  animation:bgMove 20s linear infinite;
+}
+@keyframes bgMove{0%{background-position:0 0}100%{background-position:28px 28px}}
+
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--g100);color:var(--g700);font-size:0.68rem;font-weight:500;
+  letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:20px;
+  margin-bottom:1.5rem;width:fit-content;
+  animation:slideDown 0.6s ease forwards;opacity:0;animation-delay:0.1s;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-title{
+  font-family:'Outfit',sans-serif;font-weight:500;
+  font-size:clamp(2.4rem,4vw,3.4rem);line-height:1.1;
+  letter-spacing:-0.03em;color:var(--text);margin-bottom:1.25rem;
+  animation:slideUp 0.7s ease forwards;opacity:0;animation-delay:0.25s;
+}
+.hero-title em{color:var(--g700);font-style:normal;font-weight:300}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-sub{
+  font-size:0.975rem;color:var(--muted);line-height:1.75;max-width:400px;margin-bottom:2rem;
+  animation:slideUp 0.7s ease forwards;opacity:0;animation-delay:0.4s;
+}
+.hero-btns{display:flex;gap:12px;animation:slideUp 0.7s ease forwards;opacity:0;animation-delay:0.55s}
+
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:2rem;animation:slideUp 0.7s ease forwards;opacity:0;animation-delay:0.7s}
+.htag{font-size:0.72rem;color:var(--muted);background:var(--bg-card);border:1px solid var(--border-color);padding:4px 12px;border-radius:20px}
+
+/* ── HERO RIGHT — DASHBOARD PREVIEW ── */
+.hero-right{
+  background:var(--g800);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:3rem 2rem;gap:1rem;
+  position:relative;overflow:hidden;
+}
+.hero-right::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,0.03) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.dash-preview{width:100%;max-width:320px;position:relative;z-index:2}
+.dp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.dp-title{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:500;color:#fff}
+.dp-sub{font-size:0.7rem;color:rgba(255,255,255,0.4)}
+.dp-live{display:flex;align-items:center;gap:5px;font-size:0.68rem;color:rgba(255,255,255,0.4)}
+
+/* carousel card */
+.plant-card{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;padding:1.25rem;transition:all 0.35s ease;
+}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.p-name{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:500;color:#fff;margin-bottom:2px}
+.p-sci{font-size:0.68rem;color:rgba(255,255,255,0.38);line-height:1.4}
+.s-badge{font-size:0.62rem;font-weight:500;padding:3px 10px;border-radius:10px}
+.s-ok{background:#166534;color:#86efac}.s-warn{background:#713f12;color:#fcd34d}.s-crit{background:#7f1d1d;color:#fca5a5}
+
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+.metric{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center}
+.mv{font-size:0.95rem;font-weight:500}.ml{font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:2px}
+.cg{color:#86efac}.ca{color:#fcd34d}.cb{color:#93c5fd}
+
+.bar-row{margin-bottom:7px}
+.bar-label{display:flex;justify-content:space-between;font-size:0.65rem;color:rgba(255,255,255,0.38);margin-bottom:4px}
+.bar-track{background:rgba(255,255,255,0.07);border-radius:4px;height:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.8s ease}
+.card-ts{font-size:0.6rem;color:rgba(255,255,255,0.22);text-align:right;margin-top:6px}
+
+.carousel-nav{display:flex;align-items:center;gap:10px;margin-top:4px}
+.nav-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.nav-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.2s}
+.dot.active{background:#22c55e;width:16px;border-radius:3px}
+
+/* floating mini cards */
+.float-card{
+  position:absolute;background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+  padding:8px 12px;font-size:0.7rem;color:rgba(255,255,255,0.7);
+  display:flex;align-items:center;gap:8px;z-index:3;
+}
+.fc1{top:2rem;right:1.5rem;animation:floatA 4s ease-in-out infinite}
+.fc2{bottom:3rem;left:1rem;animation:floatB 5s ease-in-out infinite}
+@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.fc-dot{width:6px;height:6px;border-radius:50%}
+
+/* ── STATS ── */
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--g900);border-top:1px solid rgba(255,255,255,0.04);
+}
+.stat{padding:2rem 1rem;text-align:center;border-right:1px solid rgba(255,255,255,0.05);cursor:default;transition:background 0.2s}
+.stat:last-child{border-right:none}
+.stat:hover{background:rgba(255,255,255,0.03)}
+.stat-num{
+  font-family:'Outfit',sans-serif;font-weight:500;font-size:2.2rem;
+  color:#fff;margin-bottom:4px;letter-spacing:-0.03em;
+  transition:transform 0.2s;
+}
+.stat:hover .stat-num{transform:scale(1.05)}
+.stat-label{font-size:0.65rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em}
+
+/* ── TICKER ── */
+.ticker{background:var(--g700);padding:10px 0;overflow:hidden;position:relative}
+.ticker-inner{display:flex;gap:3rem;white-space:nowrap;animation:ticker 25s linear infinite}
+.ticker-item{font-size:0.72rem;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ticker-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4)}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── FEATURES ── */
+.section{padding:4.5rem 2.5rem}
+.section-tag{font-size:0.68rem;color:var(--primary);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px}
+.section-title{font-family:'Outfit',sans-serif;font-weight:500;font-size:1.9rem;letter-spacing:-0.02em;color:var(--text);margin-bottom:2rem}
+
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  background:transparent;
+  border:none;
+}
+.feat{
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px;
+  padding:1.5rem;
+  cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.25,1,0.5,1);
+  position:relative;overflow:hidden;
+}
+.feat::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--primary);transform:scaleX(0);transition:transform 0.25s ease;transform-origin:left}
+.feat:hover::after,.feat.active-feat::after{transform:scaleX(1)}
+.feat:hover,.feat.active-feat{
+  background:rgba(16,185,129,0.06);
+  border-color:rgba(16,185,129,0.3);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(16,185,129,0.08);
+}
+.feat-icon{width:38px;height:38px;background:rgba(16,185,129,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;transition:transform 0.2s}
+.feat:hover .feat-icon{transform:scale(1.1)}
+.feat-icon svg{width:18px;height:18px;stroke:var(--primary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.feat-name{font-size:0.875rem;font-weight:500;color:var(--text-main);margin-bottom:4px}
+.feat-desc{font-size:0.75rem;color:var(--text-muted);line-height:1.6}
+
+.feat-detail{
+  margin-top:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;
+  padding:1.5rem;display:flex;align-items:flex-start;gap:1rem;
+  animation:fadeIn 0.3s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.detail-icon{width:44px;height:44px;background:var(--g100);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.detail-icon svg{width:22px;height:22px;stroke:var(--g700);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.detail-title{font-size:0.975rem;font-weight:500;color:var(--text);margin-bottom:5px;font-family:'Outfit',sans-serif}
+.detail-text{font-size:0.8rem;color:var(--muted);line-height:1.65}
+
+/* ── HOW ── */
+.how-section{padding:0 2.5rem 4.5rem}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:1.5rem}
+.how-card{
+  background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;
+  transition:all 0.25s;cursor:default;
+}
+.how-card:hover{transform:translateY(-4px);border-color:var(--g300)}
+.how-num{width:28px;height:28px;border-radius:50%;background:var(--g100);color:var(--g700);font-size:0.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.how-title{font-size:0.9rem;font-weight:500;color:var(--text);margin-bottom:6px;font-family:'Outfit',sans-serif}
+.how-desc{font-size:0.775rem;color:var(--muted);line-height:1.65}
+
+/* ── COUNTER SECTION ── */
+.counter-section{
+  background: transparent;
+  border: none;
+  padding: 6rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+.counter-left .section-title{margin-bottom:0.75rem}
+.counter-left p{font-size:0.95rem;color:var(--muted);line-height:1.8;max-width:400px}
+.counter-right{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.counter-card{
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 1.75rem;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(5px);
+}
+.counter-card:hover{
+  border-color: var(--primary);
+  background: rgba(16, 185, 129, 0.04);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+}
+.cc-num{
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+}
+.cc-label{font-size:0.78rem;color:var(--muted);font-weight: 400;}
+
+/* ── CTA ── */
+.cta-section{margin:0 2.5rem 4.5rem}
+.cta-box{
+  background:var(--g800);border-radius:16px;padding:3rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;
+  position:relative;overflow:hidden;
+}
+.cta-box::before{
+  content:'';position:absolute;right:-60px;top:-60px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,0.03);
+}
+.cta-box::after{
+  content:'';position:absolute;right:60px;bottom:-80px;
+  width:160px;height:160px;border-radius:50%;
+  background:rgba(255,255,255,0.02);
+}
+.cta-tag{font-size:0.68rem;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);padding:4px 10px;border-radius:10px;display:inline-block;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.07em}
+.cta-title{font-family:'Outfit',sans-serif;font-weight:500;font-size:1.6rem;letter-spacing:-0.02em;color:#fff;margin-bottom:6px}
+.cta-sub{font-size:0.85rem;color:rgba(255,255,255,0.5)}
+.cta-btns{display:flex;gap:10px;flex-shrink:0;position:relative;z-index:2}
+.cta-btn-w{background:#fff;color:var(--g800);border:none;padding:0.7rem 1.5rem;border-radius:8px;font-size:0.875rem;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s}
+.cta-btn-w:hover{background:#f0f0f0;transform:translateY(-1px)}
+.cta-btn-g{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);padding:0.7rem 1.5rem;border-radius:8px;font-size:0.875rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s}
+.cta-btn-g:hover{border-color:rgba(255,255,255,0.35);color:#fff}
+
+/* ── FOOTER ── */
+footer{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-top:1px solid var(--border);background:var(--cream)}
+.footer-logo{font-family:'Outfit',sans-serif;font-weight:600;font-size:1.1rem;color:var(--text);letter-spacing:-0.02em}
+.footer-logo em{color:var(--g700);font-style:normal}
+.footer-sub{font-size:0.68rem;color:var(--muted);margin-top:2px}
+.footer-names{font-size:0.68rem;color:var(--muted);text-align:right;line-height:1.9}
+
+/* ── REVEAL ON SCROLL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── SCROLL PROGRESS ── */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--g300),var(--primary));background-size:200% 100%;animation:gradShift 3s linear infinite;z-index:9999;width:0%;pointer-events:none;will-change:width}
+@keyframes gradShift{0%{background-position:0%}100%{background-position:200%}}
+
+/* ── CURSOR GLOW ── */
+.cursor-glow{position:fixed;pointer-events:none;z-index:0;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.05) 0%,transparent 65%);transform:translate(-50%,-50%);will-change:left,top;transition:opacity 0.5s}
+
+/* ── 3D TILT ── */
+.dash-preview{will-change:transform}
+
+/* ── LIVE NOTIFICATIONS ── */
+.live-notifs{position:fixed;bottom:1.75rem;left:1.75rem;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.lnotif{background:var(--g800);color:rgba(255,255,255,0.9);padding:0.65rem 1rem;border-radius:10px;font-size:0.74rem;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:9px;box-shadow:0 6px 24px rgba(0,0,0,0.22);border-left:2px solid var(--primary);animation:lnIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;will-change:opacity,transform}
+@keyframes lnIn{from{opacity:0;transform:translateX(-18px) scale(0.94)}to{opacity:1;transform:translateX(0) scale(1)}}
+.lnotif.out{animation:lnOut 0.3s ease forwards!important}
+@keyframes lnOut{to{opacity:0;transform:translateX(-12px)}}
+.lnotif-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.lnotif-time{font-size:0.62rem;color:rgba(255,255,255,0.28);margin-left:auto;padding-left:8px;white-space:nowrap}
+
+/* ── THEME BUTTON ── */
+.theme-btn{
+  background:transparent; border:1px solid var(--border-color, var(--border));
+  color:var(--text); width:36px; height:36px; border-radius:8px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; position:relative; overflow:hidden;
+}
+.theme-btn:hover{ border-color:var(--primary); color:var(--primary); }
+.theme-btn svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition: transform 0.4s ease, opacity 0.4s ease; position:absolute; }
+.theme-btn .sun{ opacity:0; transform: translateY(18px); }
+.theme-btn .moon{ opacity:1; transform: translateY(0); }
+[data-theme="light"] .theme-btn .sun{ opacity:1; transform: translateY(0); }
+[data-theme="light"] .theme-btn .moon{ opacity:0; transform: translateY(-18px); }
+
+/* ── AURORA GRADIENTS ── */
+.aurora-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0.85; }
+.aurora-color { position: absolute; filter: blur(140px); border-radius: 50%; opacity: 0.35; will-change: transform; }
+.aurora-1 { width: 600px; height: 600px; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); top: -10%; left: -10%; animation: auroraShift1 18s ease-in-out infinite alternate; }
+.aurora-2 { width: 500px; height: 500px; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); bottom: -10%; right: -10%; animation: auroraShift2 22s ease-in-out infinite alternate; }
+.aurora-3 { width: 400px; height: 400px; background: radial-gradient(circle, #3b82f6 0%, transparent 70%); top: 30%; right: 10%; animation: auroraShift3 15s ease-in-out infinite alternate; }
+@keyframes auroraShift1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(120px, 80px) scale(1.2); } }
+@keyframes auroraShift2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-100px, -90px) scale(1.1); } }
+@keyframes auroraShift3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-60px, 120px) scale(1.3); } }
+
+/* ── SPROUT PRELOADER ANIMATION ── */
+#sprout-stem { animation: growStem 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+#sprout-leaf-l { animation: growLeafL 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: 1.4s; }
+#sprout-leaf-r { animation: growLeafR 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: 1.6s; }
+@keyframes growStem { to { d: path("M 50 76 Q 48 60 50 45"); } }
+@keyframes growLeafL { to { opacity: 1; transform: scale(1); } }
+@keyframes growLeafR { to { opacity: 1; transform: scale(1); } }
+
+/* ── FEATURE CARD BORDER GLOW ── */
+.feat::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(130px circle at var(--x, -999px) var(--y, -999px), rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0; transition: opacity 0.5s ease;
+}
+.feat-icon, .feat-name, .feat-desc { position: relative; z-index: 1; }
+.feat {
+  border: 1px solid var(--border-color); border-radius: 14px;
+}
+.feat:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.15);
+}
+
+/* ── FOOTER PREMIUM ── */
+footer {
+  position: relative;
+  background: var(--bg-main);
+  border-top: 1px solid transparent;
+  background-clip: padding-box;
+  overflow: hidden;
+  padding: 0;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--primary) 30%,
+    var(--accent) 50%,
+    var(--primary) 70%,
+    transparent 100%
+  );
+  animation: footerLinePulse 4s ease-in-out infinite alternate;
+}
+@keyframes footerLinePulse {
+  0%   { opacity: 0.4; background-position: 0% 0%; }
+  100% { opacity: 1;   background-position: 100% 0%; }
+}
+footer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 100%, rgba(16,185,129,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 85% 100%, rgba(0,255,135,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+.footer-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3.5rem 2.5rem 2rem;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
+  gap: 3rem;
+}
+.footer-brand {}
+.footer-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+.footer-brand-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+.footer-brand-name em {
+  color: var(--primary);
+  font-style: normal;
+  font-weight: 300;
+}
+.footer-tagline {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 220px;
+  margin-bottom: 1.5rem;
+}
+.footer-socials {
+  display: flex;
+  gap: 8px;
+}
+.footer-social-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.25,1,0.5,1);
+  font-size: 0.8rem;
+}
+.footer-social-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(16,185,129,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16,185,129,0.15);
+}
+.footer-social-btn svg {
+  width: 15px; height: 15px;
+  fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.footer-col-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  margin-bottom: 1.1rem;
+}
+.footer-col-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.footer-col-links a {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-col-links a::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 1px;
+  background: var(--primary);
+  transition: width 0.25s ease;
+  flex-shrink: 0;
+}
+.footer-col-links a:hover {
+  color: var(--text-main);
+  padding-left: 2px;
+}
+.footer-col-links a:hover::before {
+  width: 12px;
+}
+.footer-tech-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0.2rem;
+}
+.tech-badge {
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.2s;
+  cursor: default;
+}
+.tech-badge:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(16,185,129,0.08);
+}
+.footer-team {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+.footer-team-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: all 0.25s cubic-bezier(0.25,1,0.5,1);
+  text-decoration: none;
+  cursor: default;
+}
+.footer-team-member:hover {
+  border-color: var(--border-color);
+  background: rgba(16,185,129,0.05);
+  transform: translateX(4px);
+}
+.member-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #0a1711;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(16,185,129,0.2);
+  transition: box-shadow 0.2s;
+}
+.footer-team-member:hover .member-avatar {
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.4);
+}
+.member-info {
+  display: flex;
+  flex-direction: column;
+}
+.member-name {
+  font-size: 0.78rem;
+  color: var(--text-main);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.member-role {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border-color);
+  margin: 0 2.5rem;
+  padding: 1.2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.1rem 2.5rem;
+}
+.footer-copy {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.footer-copy span {
+  color: var(--primary);
+}
+.footer-pulse {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.pulse-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 0 rgba(16,185,129,0.6);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%   { box-shadow: 0 0 0 0   rgba(16,185,129,0.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0   rgba(16,185,129,0); }
+}
+.footer-inner .footer-brand,
+.footer-inner .footer-col {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: footerFadeUp 0.6s ease forwards;
+}
+.footer-inner .footer-brand { animation-delay: 0.1s; }
+.footer-inner .footer-col:nth-child(2) { animation-delay: 0.2s; }
+.footer-inner .footer-col:nth-child(3) { animation-delay: 0.3s; }
+.footer-inner .footer-col:nth-child(4) { animation-delay: 0.4s; }
+@keyframes footerFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+@media(max-width:900px){
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+}
+@media(max-width:560px){
+  .footer-inner { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader" style="position:fixed; inset:0; background:var(--bg-deep, #050d09); z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);">
+  <div style="position:relative; width:80px; height:80px; margin-bottom:1.5rem;">
+    <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+      <path d="M 20 80 Q 50 75 80 80" stroke="var(--text-muted)" stroke-width="3" fill="none" />
+      <circle cx="50" cy="76" r="6" fill="#854d0e" />
+      <path id="sprout-stem" d="M 50 76 Q 50 76 50 76" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" fill="none" />
+      <path id="sprout-leaf-l" d="M 50 45 Q 35 35 48 55" stroke="var(--primary)" stroke-width="3" fill="var(--accent)" stroke-linecap="round" style="opacity:0; transform-origin: 50px 50px; transform: scale(0);" />
+      <path id="sprout-leaf-r" d="M 50 45 Q 65 35 52 55" stroke="var(--primary)" stroke-width="3" fill="var(--accent)" stroke-linecap="round" style="opacity:0; transform-origin: 50px 50px; transform: scale(0);" />
+    </svg>
+  </div>
+  <div style="font-family:'Outfit',sans-serif; color:var(--text-main, #fff); font-size:1.15rem; font-weight:500; letter-spacing:0.04em;">Eco<em style="color:var(--primary); font-style:normal;">Grow</em></div>
+  <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px; font-family:'Inter',sans-serif; opacity:0.8;">Semeando inteligência...</div>
+</div>
+
+<!-- AURORA BG -->
+<div class="aurora-bg">
+  <div class="aurora-color aurora-1"></div>
+  <div class="aurora-color aurora-2"></div>
+  <div class="aurora-color aurora-3"></div>
+</div>
+
+<nav>
+  <a href="#" class="logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">
+    <svg viewBox="0 0 100 100" style="width:30px; height:30px; overflow:visible; filter:drop-shadow(0 0 8px rgba(16,185,129,0.35));">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--primary)" stroke-width="6" />
+      <path d="M50 25 C35 38 38 60 50 75 C62 60 65 38 50 25 Z" fill="var(--primary)" />
+      <path d="M50 40 C43 48 45 60 50 70 C55 60 57 48 50 40 Z" fill="var(--accent)" />
+      <circle cx="50" cy="72" r="4" fill="#fff" />
+    </svg>
+    <span style="font-family:'Outfit',sans-serif; font-weight:600; font-size:1.4rem; color:var(--text); letter-spacing:-0.02em;">Eco<em style="color:var(--primary); font-style:normal; font-weight:300;">Grow</em></span>
+  </a>
+  <div class="nav-links">
+    <a href="#funcionalidades">Funcionalidades</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#sobre">Sobre</a>
+    <button id="theme-toggle" class="theme-btn" aria-label="Alternar tema" style="margin-right: 0.75rem;">
+      <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a id="nav-login" href="login.html" class="btn-o">Entrar</a>
+    <a id="nav-start" href="login.html" style="color:white" class="btn-p">Começar grátis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="position:relative;">
+  <!-- PARTICLE CANVAS -->
+  <canvas id="particle-canvas" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1;"></canvas>
+  <div class="hero-left">
+    <div class="live-badge"><span class="live-dot"></span>Sistema ativo 24/7</div>
+    <h1 class="hero-title">Cultive o futuro<br><em>dentro</em> do seu lar.</h1>
+    <p class="hero-sub">EcoGrow integra IoT, IA e automação para cuidar das suas plantas com precisão, eliminando o erro humano e democratizando o cultivo urbano.</p>
+    <div class="hero-btns">
+      <a id="hero-cta" href="login.html" class="btn-p">Ver demo</a>
+      <a href="#funcionalidades" class="btn-o">Saiba mais</a>
+    </div>
+    <div class="hero-tags">
+      <span class="htag">IoT integrado</span>
+      <span class="htag">IA preditiva</span>
+      <span class="htag">Irrigação automática</span>
+      <span class="htag">500+ espécies</span>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <!-- floating mini cards -->
+    <div class="float-card fc1">
+      <span class="fc-dot" style="background:#22c55e"></span>
+      <span>3 plantas irrigadas hoje</span>
+    </div>
+    <div class="float-card fc2">
+      <span class="fc-dot" style="background:#fcd34d"></span>
+      <span>Alerta: tomate com baixa umidade</span>
+    </div>
+
+    <div class="dash-preview">
+      <div class="dp-header">
+        <div>
+          <div class="dp-title">Minhas Plantas</div>
+          <div class="dp-sub">Monitoramento em tempo real</div>
+        </div>
+        <div class="dp-live"><span class="live-dot"></span><span id="cidx">1 / 6</span></div>
+      </div>
+
+      <div class="plant-card" id="pcard">
+        <div class="card-top">
+          <div>
+            <div class="p-name" id="pname">Manjericão</div>
+            <div class="p-sci" id="psci">Ocimum basilicum · Vaso 3</div>
+          </div>
+          <div class="s-badge s-ok" id="pbadge">Saudável</div>
+        </div>
+        <div class="metrics">
+          <div class="metric"><div class="mv cg" id="pumid">72%</div><div class="ml">Umidade</div></div>
+          <div class="metric"><div class="mv ca" id="ptemp">24°C</div><div class="ml">Temp.</div></div>
+          <div class="metric"><div class="mv cb" id="plux">840</div><div class="ml">Lux</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>Saúde geral</span><span id="phpct">88%</span></div>
+          <div class="bar-track"><div class="bar-fill" id="phbar" style="width:88%;background:#22c55e"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>Umidade do solo</span><span id="pspct">72%</span></div>
+          <div class="bar-track"><div class="bar-fill" id="psbar" style="width:72%;background:#40916c"></div></div>
+        </div>
+        <div class="card-ts">Atualizado agora mesmo</div>
+      </div>
+
+      <div class="carousel-nav" style="justify-content:center">
+        <button class="nav-btn" onclick="prev()" aria-label="Anterior">&#8592;</button>
+        <div class="dots" id="dots"></div>
+        <button class="nav-btn" onclick="next()" aria-label="Próxima">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat"><div class="stat-num" data-target="500">0</div><div class="stat-label">Espécies cadastradas</div></div>
+  <div class="stat"><div class="stat-num" data-target="98">0</div><div class="stat-label">% de precisão</div></div>
+  <div class="stat"><div class="stat-num" data-target="3">0</div><div class="stat-label">Camadas IoT</div></div>
+  <div class="stat"><div class="stat-num" data-target="24">0</div><div class="stat-label">Horas online / dia</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="section reveal" id="funcionalidades">
+  <div class="section-tag">Funcionalidades</div>
+  <div class="section-title">Tecnologia para o cultivo</div>
+  <div class="features-grid">
+    <div class="feat active-feat" onclick="selectFeat(0)">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg></div>
+      <div class="feat-name">Monitoramento</div>
+      <div class="feat-desc">Umidade, temperatura e luz via IoT em tempo real.</div>
+    </div>
+    <div class="feat" onclick="selectFeat(1)">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 2v6m0 0c0 0-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z"/></svg></div>
+      <div class="feat-name">Irrigação auto</div>
+      <div class="feat-desc">Bombas ativadas por limiar de espécie automaticamente.</div>
+    </div>
+    <div class="feat" onclick="selectFeat(2)">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6m-3-3h6"/></svg></div>
+      <div class="feat-name">Diagnóstico IA</div>
+      <div class="feat-desc">Visão computacional identifica pragas pela câmera.</div>
+    </div>
+    <div class="feat" onclick="selectFeat(3)">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+      <div class="feat-name">Enciclopédia</div>
+      <div class="feat-desc">Base com 500+ espécies e requisitos ideais.</div>
+    </div>
+    <div class="feat" onclick="selectFeat(4)">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <div class="feat-name">Relatórios</div>
+      <div class="feat-desc">Histórico de crescimento com gráficos de saúde.</div>
+    </div>
+    <div class="feat" onclick="selectFeat(5)">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+      <div class="feat-name">Clima</div>
+      <div class="feat-desc">OpenWeather otimiza irrigação com previsão de chuva.</div>
+    </div>
+  </div>
+  <div class="feat-detail" id="feat-detail">
+    <div class="detail-icon" id="dicon">
+      <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg>
+    </div>
+    <div>
+      <div class="detail-title" id="dtitle">Monitoramento em tempo real</div>
+      <div class="detail-text" id="dtext">Sensores IoT coletam dados de umidade do solo, temperatura ambiente e luminosidade a cada 30 segundos. Todos os dados ficam disponíveis no dashboard e geram alertas automáticos quando os valores saem do ideal para cada espécie.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="how-section reveal" id="como-funciona">
+  <div class="section-tag">Como funciona</div>
+  <div class="section-title">Em 3 passos simples</div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">1</div>
+      <div class="how-title">Cadastre suas plantas</div>
+      <div class="how-desc">Adicione suas plantas informando espécie, local e vaso. O sistema carrega automaticamente os parâmetros ideais da enciclopédia.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">2</div>
+      <div class="how-title">Conecte os sensores</div>
+      <div class="how-desc">Instale os sensores IoT no solo e no ambiente. Em minutos os dados começam a chegar no dashboard em tempo real.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">3</div>
+      <div class="how-title">Deixe o EcoGrow agir</div>
+      <div class="how-desc">A IA monitora, irriga e alerta automaticamente. Você acompanha tudo pelo celular e intervém só quando necessário.</div>
+    </div>
+  </div>
+</section>
+
+<!-- COUNTER -->
+<section class="counter-section reveal" id="sobre">
+  <div class="counter-left">
+    <div class="section-tag">Resultados</div>
+    <div class="section-title" style="margin-bottom:0.75rem">Dados que falam por si</div>
+    <p>Desde 2024, o EcoGrow ajuda cultivadores urbanos a economizar água, tempo e recursos com tecnologia acessível.</p>
+  </div>
+  <div class="counter-right">
+    <div class="counter-card"><div class="cc-num">-42%</div><div class="cc-label">menos água gasta</div></div>
+    <div class="counter-card"><div class="cc-num">3x</div><div class="cc-label">mais produtividade</div></div>
+    <div class="counter-card"><div class="cc-num">98%</div><div class="cc-label">precisão dos sensores</div></div>
+    <div class="counter-card"><div class="cc-num">500+</div><div class="cc-label">espécies suportadas</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section reveal">
+  <div class="cta-box">
+    <div>
+      <div class="cta-tag">Grátis para começar</div>
+      <div class="cta-title">Pronto para cultivar com inteligência?</div>
+      <div class="cta-sub">Crie sua conta e comece a monitorar suas plantas hoje mesmo.</div>
+    </div>
+    <div class="cta-btns">
+      <button class="cta-btn-w" id="cta-main" onclick="location.href='login.html'">Criar conta</button>
+      <button class="cta-btn-g" id="cta-sec" onclick="location.href='login.html'">Ver demo</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+
+    <!-- Coluna 1: Brand -->
+    <div class="footer-brand">
+      <a href="#" class="footer-brand-logo">
+        <svg viewBox="0 0 100 100" style="width:26px;height:26px;overflow:visible;filter:drop-shadow(0 0 6px rgba(16,185,129,0.35));">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--primary)" stroke-width="6"/>
+          <path d="M50 25 C35 38 38 60 50 75 C62 60 65 38 50 25 Z" fill="var(--primary)"/>
+          <path d="M50 40 C43 48 45 60 50 70 C55 60 57 48 50 40 Z" fill="var(--accent)"/>
+          <circle cx="50" cy="72" r="4" fill="#fff"/>
+        </svg>
+        <span class="footer-brand-name">Eco<em>Grow</em></span>
+      </a>
+      <p class="footer-tagline">Agricultura urbana inteligente com monitoramento em tempo real, IA e automação de irrigação.</p>
+      <div class="footer-socials">
+        <!-- GitHub -->
+        <a href="#" class="footer-social-btn" aria-label="GitHub">
+          <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <!-- LinkedIn -->
+        <a href="#" class="footer-social-btn" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <!-- Email -->
+        <a href="#" class="footer-social-btn" aria-label="Email">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Coluna 2: Navegação -->
+    <div class="footer-col">
+      <div class="footer-col-title">Navegação</div>
+      <ul class="footer-col-links">
+        <li><a href="#funcionalidades">Funcionalidades</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="login.html">Entrar</a></li>
+        <li><a href="login.html">Criar conta</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+      </ul>
+    </div>
+
+    <!-- Coluna 3: Tecnologia -->
+    <div class="footer-col">
+      <div class="footer-col-title">Tecnologia</div>
+      <div class="footer-tech-badges">
+        <span class="tech-badge">Spring Boot</span>
+        <span class="tech-badge">MySQL</span>
+        <span class="tech-badge">Java 17</span>
+        <span class="tech-badge">REST API</span>
+        <span class="tech-badge">IoT Sensors</span>
+        <span class="tech-badge">OpenWeather</span>
+        <span class="tech-badge">Canvas API</span>
+        <span class="tech-badge">CSS Animations</span>
+      </div>
+    </div>
+
+    <!-- Coluna 4: Equipe -->
+    <div class="footer-col">
+      <div class="footer-col-title">Equipe</div>
+      <div class="footer-team">
+        <div class="footer-team-member">
+          <div class="member-avatar">AA</div>
+          <div class="member-info">
+            <span class="member-name">Antonio Alcantara</span>
+            <span class="member-role">Desenvolvimento</span>
+          </div>
+        </div>
+        <div class="footer-team-member">
+          <div class="member-avatar">EF</div>
+          <div class="member-info">
+            <span class="member-name">Elton Figueiredo</span>
+            <span class="member-role">Desenvolvimento</span>
+          </div>
+        </div>
+        <div class="footer-team-member">
+          <div class="member-avatar">OM</div>
+          <div class="member-info">
+            <span class="member-name">Osvaldo Melo</span>
+            <span class="member-role">Desenvolvimento</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      © 2024 <span>EcoGrow</span> · UCSAL · Engenharia de Software
+    </div>
+    <div class="footer-pulse">
+      <div class="pulse-dot"></div>
+      Sistema online
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── AUTH AWARE NAV ── */
+(function(){
+  const saved = localStorage.getItem('ecogrow_user');
+  if(saved){
+    const u = JSON.parse(saved);
+    const firstName = u.nome.split(' ')[0];
+    const navLogin = document.getElementById('nav-login');
+    const navStart = document.getElementById('nav-start');
+    const heroCta  = document.getElementById('hero-cta');
+    const ctaMain  = document.getElementById('cta-main');
+    const ctaSec   = document.getElementById('cta-sec');
+    if(navLogin){ navLogin.textContent = 'Dashboard'; navLogin.href = 'dashboard.html'; }
+    if(navStart){ navStart.textContent = 'Meu painel ›'; navStart.href = 'dashboard.html'; }
+    if(heroCta) { heroCta.textContent = 'Ir para o dashboard'; heroCta.href = 'dashboard.html'; }
+    if(ctaMain) { ctaMain.textContent = 'Ir para o dashboard'; ctaMain.onclick = ()=>location.href='dashboard.html'; }
+    if(ctaSec)  { ctaSec.textContent  = 'Ver minhas plantas';  ctaSec.onclick  = ()=>location.href='dashboard.html'; }
+  }
+})();
+
+/* ── CAROUSEL DATA ── */
+const DEMO_PLANTS=[
+  {name:'Manjericão',sci:'Ocimum basilicum · Vaso 3',status:'Saudável',sc:'s-ok',umid:72,temp:24,lux:840,health:88,color:'#22c55e'},
+  {name:'Cacto',sci:'Echinopsis sp. · Vaso 1',status:'Saudável',sc:'s-ok',umid:18,temp:28,lux:1200,health:95,color:'#22c55e'},
+  {name:'Tomate cereja',sci:'Solanum lycopersicum · Canteiro 2',status:'Atenção',sc:'s-warn',umid:41,temp:26,lux:950,health:62,color:'#f59e0b'},
+  {name:'Orquídea',sci:'Phalaenopsis sp. · Vaso 5',status:'Saudável',sc:'s-ok',umid:60,temp:22,lux:400,health:91,color:'#22c55e'},
+  {name:'Lavanda',sci:'Lavandula angustifolia · Vaso 2',status:'Crítico',sc:'s-crit',umid:12,temp:31,lux:1100,health:34,color:'#ef4444'},
+  {name:'Alface',sci:'Lactuca sativa · Canteiro 1',status:'Saudável',sc:'s-ok',umid:78,temp:20,lux:600,health:93,color:'#22c55e'}
+];
+
+function apiToCarousel(p){
+  const sc = p.status==='SAUDAVEL'?'s-ok': p.status==='ALERTA'?'s-warn':'s-crit';
+  const label = p.status==='SAUDAVEL'?'Saudável': p.status==='ALERTA'?'Atenção':'Crítico';
+  const color = p.status==='SAUDAVEL'?'#22c55e': p.status==='ALERTA'?'#f59e0b':'#ef4444';
+  const health = p.status==='SAUDAVEL'? Math.min(100,70+(p.umidade||50)*0.3):
+                 p.status==='ALERTA'?   Math.min(69,35+(p.umidade||30)*0.5):
+                                        Math.min(34,(p.umidade||10)*0.8);
+  return {
+    name: p.nome, sci: (p.especie||'Espécie não informada'),
+    status: label, sc, color,
+    umid: p.umidade||0, temp: p.temperatura||0,
+    lux: p.luminosidade||0, health: Math.round(health)
+  };
+}
+
+let plants = DEMO_PLANTS;
+let cur=0,lu=0,lt=0,ll=0;
+
+async function tryLoadRealPlants(){
+  const saved = localStorage.getItem('ecogrow_user');
+  if(!saved) return;
+  const u = JSON.parse(saved);
+  try{
+    const res = await fetch(`http://localhost:8080/api/plantas/usuario/${u.id}`);
+    if(!res.ok) return;
+    const data = await res.json();
+    if(data && data.length > 0){
+      plants = data.map(apiToCarousel);
+      cur = 0; lu = 0; lt = 0; ll = 0;
+      rebuildDots();
+      render(0, false);
+    }
+  } catch(e){ /* silently fall back to demo data */ }
+}
+
+function rebuildDots(){
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = '';
+  plants.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.onclick=()=>{cur=i;lu=lt=ll=0;render(cur,true)};
+    dotsEl.appendChild(d);
+  });
+}
+
+function render(idx,anim){
+  const p=plants[idx];
+  if(anim){const c=document.getElementById('pcard');c.style.opacity='0';c.style.transform='translateY(8px)';setTimeout(()=>{c.style.transition='all 0.3s ease';c.style.opacity='1';c.style.transform='translateY(0)'},50)}
+  document.getElementById('pname').textContent=p.name;
+  document.getElementById('psci').textContent=p.sci;
+  const b=document.getElementById('pbadge');b.textContent=p.status;b.className='s-badge '+p.sc;
+  const u=Math.min(100,Math.max(0,Math.round(p.umid+lu)));
+  const t=(p.temp+lt).toFixed(1);
+  const l=Math.max(0,Math.round(p.lux+ll));
+  const h=Math.min(100,Math.max(0,Math.round(p.health)));
+  document.getElementById('pumid').textContent=u+'%';
+  document.getElementById('ptemp').textContent=t+'°C';
+  document.getElementById('plux').textContent=l;
+  document.getElementById('phpct').textContent=h+'%';
+  document.getElementById('phbar').style.width=h+'%';
+  document.getElementById('phbar').style.background=p.color;
+  document.getElementById('pspct').textContent=u+'%';
+  document.getElementById('psbar').style.width=u+'%';
+  document.getElementById('cidx').textContent=(idx+1)+' / '+plants.length;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+function next(){cur=(cur+1)%plants.length;lu=lt=ll=0;render(cur,true)}
+function prev(){cur=(cur-1+plants.length)%plants.length;lu=lt=ll=0;render(cur,true)}
+
+rebuildDots();
+setInterval(()=>{lu=(Math.random()-.5)*4;lt=(Math.random()-.5)*1.2;ll=Math.round((Math.random()-.5)*80);render(cur,false)},2500);
+render(0,false);
+
+/* Auto-advance carousel */
+setInterval(()=>next(),5000);
+
+/* Try to load real data after initial render */
+tryLoadRealPlants();
+
+/* ── TICKER ── */
+const items=['Sensores ativos','Irrigação automática','Diagnóstico por IA','500+ espécies','Monitoramento 24/7','OpenWeather integrado','Dashboard em tempo real','Alertas inteligentes'];
+const t=document.getElementById('ticker');
+[...items,...items].forEach(item=>{const d=document.createElement('div');d.className='ticker-item';d.innerHTML=`<span class="ticker-dot"></span>${item}`;t.appendChild(d)});
+
+/* ── STAT COUNTER ANIMATION ── */
+function animateCounter(el,target,suffix){
+  let start=0;const dur=1800;const step=16;
+  const inc=target/(dur/step);
+  const timer=setInterval(()=>{
+    start=Math.min(start+inc,target);
+    el.textContent=Math.round(start)+(suffix||'');
+    if(start>=target)clearInterval(timer);
+  },step);
+}
+
+/* ── SCROLL REVEAL ── */
+const reveals=document.querySelectorAll('.reveal');
+const statsNums=document.querySelectorAll('.stat-num');
+let statsAnimated=false;
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.15});
+reveals.forEach(r=>obs.observe(r));
+
+const statsObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&!statsAnimated){
+      statsAnimated=true;
+      statsNums.forEach(n=>{
+        const target=parseInt(n.dataset.target);
+        const suffix=n.dataset.target==='98'?'%':n.dataset.target==='24'?'/7':n.dataset.target==='500'?'+':'';
+        animateCounter(n,target,suffix);
+      });
+    }
+  });
+},{threshold:0.5});
+document.querySelector('.stats')&&statsObs.observe(document.querySelector('.stats'));
+
+/* ── FEATURES ── */
+const feats=[
+  {svg:'<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>',title:'Monitoramento em tempo real',text:'Sensores IoT coletam dados de umidade do solo, temperatura ambiente e luminosidade a cada 30 segundos. Todos os dados ficam disponíveis no dashboard e geram alertas automáticos quando os valores saem do ideal para cada espécie.'},
+  {svg:'<path d="M12 2v6m0 0c0 0-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z"/>',title:'Irrigação automática inteligente',text:'O sistema aciona as bombas de irrigação automaticamente quando a umidade do solo cai abaixo do limiar ideal para cada espécie. Economiza água e elimina o esquecimento de regar.'},
+  {svg:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6m-3-3h6"/>',title:'Diagnóstico por IA',text:'A câmera integrada usa visão computacional para identificar pragas, doenças e deficiências nutricionais nas folhas. O sistema sugere tratamentos e registra o histórico de saúde da planta.'},
+  {svg:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',title:'Enciclopédia de espécies',text:'Base de dados com mais de 500 espécies de plantas, contendo parâmetros ideais de umidade, temperatura, luminosidade e frequência de irrigação.'},
+  {svg:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',title:'Relatórios e histórico',text:'Gráficos interativos mostram a evolução da saúde, umidade e temperatura de cada planta ao longo do tempo. Exporte relatórios em PDF para acompanhar o crescimento.'},
+  {svg:'<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',title:'Integração com clima',text:'A API OpenWeather fornece previsão de chuva em tempo real. Quando chuva é detectada, o sistema suspende a irrigação automática, evitando excesso de água e desperdício.'}
+];
+
+function selectFeat(idx){
+  document.querySelectorAll('.feat').forEach((el,i)=>el.classList.toggle('active-feat',i===idx));
+  const f=feats[idx];
+  const detail=document.getElementById('feat-detail');
+  detail.style.animation='none';void detail.offsetWidth;detail.style.animation='fadeIn 0.3s ease';
+  document.getElementById('dicon').innerHTML=`<svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--g700);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">${f.svg}</svg>`;
+  document.getElementById('dtitle').textContent=f.title;
+  document.getElementById('dtext').textContent=f.text;
+}
+
+/* ════════════════════════════════════════
+   INTERACTIVE LAYER
+════════════════════════════════════════ */
+
+/* ── SCROLL PROGRESS BAR ── */
+(function(){
+  const bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+/* ── CURSOR AMBIENT GLOW ── */
+(function(){
+  const glow = document.createElement('div');
+  glow.className = 'cursor-glow';
+  document.body.appendChild(glow);
+  let tx = -999, ty = -999, cx = -999, cy = -999;
+  document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+  (function loop() {
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+    glow.style.left = cx + 'px';
+    glow.style.top  = cy + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.addEventListener('mouseleave', () => glow.style.opacity = '0');
+  document.addEventListener('mouseenter', () => glow.style.opacity = '1');
+})();
+
+/* ── 3D PERSPECTIVE TILT ON HERO CARD ── */
+(function(){
+  const heroRight   = document.querySelector('.hero-right');
+  const dashPreview = document.querySelector('.dash-preview');
+  if (!heroRight || !dashPreview) return;
+  heroRight.addEventListener('mousemove', e => {
+    const r = heroRight.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+    const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    dashPreview.style.transform  = `perspective(900px) rotateY(${x*8}deg) rotateX(${-y*5}deg) scale(1.03) translateZ(12px)`;
+    dashPreview.style.transition = 'transform 0.08s ease';
+  }, { passive: true });
+  heroRight.addEventListener('mouseleave', () => {
+    dashPreview.style.transform  = 'perspective(900px) rotateY(0deg) rotateX(0deg) scale(1) translateZ(0)';
+    dashPreview.style.transition = 'transform 0.6s cubic-bezier(0.34,1.2,0.64,1)';
+  });
+  // Parallax on float cards
+  heroRight.addEventListener('mousemove', e => {
+    const r = heroRight.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width  - 0.5;
+    const y = (e.clientY - r.top)  / r.height - 0.5;
+    document.querySelectorAll('.float-card').forEach((fc, i) => {
+      const d = i === 0 ? 1 : -1;
+      fc.style.transform = `translate(${x*12*d}px, ${y*8*d}px)`;
+      fc.style.transition = 'transform 0.12s ease';
+    });
+  }, { passive: true });
+  heroRight.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.float-card').forEach(fc => {
+      fc.style.transform = '';
+      fc.style.transition = 'transform 0.6s ease';
+    });
+  });
+})();
+
+/* ── MAGNETIC BUTTONS ── */
+(function(){
+  document.querySelectorAll('.btn-p, .btn-o, .cta-btn-w').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width  / 2;
+      const y = e.clientY - r.top  - r.height / 2;
+      btn.style.transform = `translate(${x*0.2}px, ${y*0.28}px) translateY(-1px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transition = 'transform 0.45s cubic-bezier(0.34,1.2,0.64,1)';
+      btn.style.transform  = '';
+      setTimeout(() => { btn.style.transition = ''; }, 450);
+    });
+  });
+})();
+
+/* ── LIVE SENSOR NOTIFICATION FEED ── */
+(function(){
+  const area = document.createElement('div');
+  area.className = 'live-notifs';
+  document.body.appendChild(area);
+
+  const FEED = [
+    { color:'#22c55e', msg:'Manjericão irrigado automaticamente' },
+    { color:'#60a5fa', msg:'Temperatura ideal detectada: 24°C' },
+    { color:'#fbbf24', msg:'Atenção: lavanda com umidade baixa' },
+    { color:'#22c55e', msg:'Orquídea: saúde em 91% — ótimo estado' },
+    { color:'#60a5fa', msg:'Chuva prevista — irrigação suspensa' },
+    { color:'#22c55e', msg:'Alface colhida: 3× mais produtividade' },
+    { color:'#fbbf24', msg:'Cacto: luminosidade acima do ideal' },
+    { color:'#22c55e', msg:'Todos os sensores online — sistema OK' },
+    { color:'#60a5fa', msg:'Novo sensor IoT conectado: Vaso 4' },
+    { color:'#fbbf24', msg:'Tomate: umidade em 41% — necessita rega' },
+  ];
+
+  function now() {
+    const d = new Date();
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  }
+
+  let idx = 0;
+  function spawn() {
+    const n = FEED[idx % FEED.length]; idx++;
+    const el = document.createElement('div');
+    el.className = 'lnotif';
+    el.innerHTML = `<span class="lnotif-dot" style="background:${n.color}"></span><span>${n.msg}</span><span class="lnotif-time">${now()}</span>`;
+    area.appendChild(el);
+    // auto-remove
+    setTimeout(() => {
+      el.classList.add('out');
+      setTimeout(() => el.remove(), 320);
+    }, 4800);
+  }
+
+  // Initial delay then recurring
+  setTimeout(() => { spawn(); setInterval(spawn, 7000); }, 2500);
+})();
+
+/* ── PRELOADER & COORDINATES & THEME TOGGLE ── */
+(function(){
+  // Hide preloader on load
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('preloader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 600);
+    }
+  });
+  
+  // Theme Toggle logic
+  const toggleBtn = document.getElementById('theme-toggle');
+  if (toggleBtn) {
+    const currentTheme = localStorage.getItem('ecogrow_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    toggleBtn.addEventListener('click', () => {
+      const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ecogrow_theme', theme);
+    });
+  }
+
+  // Feature Card Border Glow Tracking
+  document.querySelectorAll('.feat').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      card.style.setProperty('--x', `${x}px`);
+      card.style.setProperty('--y', `${y}px`);
+    });
+  });
+})();
+
+/* ── CANVAS PARTICLE SYSTEM (BOTANICAL NEURAL NETWORK FOR HOME) ── */
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const parent = canvas.parentElement;
+  
+  let width = canvas.width = parent.offsetWidth;
+  let height = canvas.height = parent.offsetHeight;
+  
+  window.addEventListener('resize', () => {
+    width = canvas.width = parent.offsetWidth;
+    height = canvas.height = parent.offsetHeight;
+  });
+  
+  const particles = [];
+  const particleCount = 55;
+  
+  let mouse = { x: -9999, y: -9999, active: false };
+  
+  class Particle {
+    constructor() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.size = Math.random() * 2 + 1;
+      this.speedX = (Math.random() - 0.5) * 0.45;
+      this.speedY = (Math.random() - 0.5) * 0.45;
+      this.baseOpacity = Math.random() * 0.35 + 0.15;
+      this.opacity = this.baseOpacity;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      
+      if (this.x < 0) this.x = width;
+      if (this.x > width) this.x = 0;
+      if (this.y < 0) this.y = height;
+      if (this.y > height) this.y = 0;
+      
+      if (mouse.active) {
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          this.x += (dx / dist) * force * 1.5;
+          this.y += (dy / dist) * force * 1.5;
+          this.opacity = Math.min(1, this.baseOpacity + force * 0.45);
+        } else {
+          this.opacity = this.baseOpacity;
+        }
+      } else {
+        this.opacity = this.baseOpacity;
+      }
+    }
+    draw() {
+      ctx.fillStyle = `rgba(16, 185, 129, ${this.opacity})`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+  
+  parent.addEventListener('mousemove', e => {
+    const rect = parent.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+    mouse.active = true;
+  });
+  
+  parent.addEventListener('mouseleave', () => {
+    mouse.active = false;
+    mouse.x = -9999;
+    mouse.y = -9999;
+  });
+  
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    
+    ctx.lineWidth = 0.55;
+    for (let i = 0; i < particles.length; i++) {
+      if (mouse.active) {
+        const mDist = Math.hypot(particles[i].x - mouse.x, particles[i].y - mouse.y);
+        if (mDist < 130) {
+          ctx.strokeStyle = `rgba(16, 185, 129, ${0.22 * (1 - mDist / 130)})`;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+      }
+      for (let j = i + 1; j < particles.length; j++) {
+        const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+        if (dist < 90) {
+          ctx.strokeStyle = `rgba(16, 185, 129, ${0.12 * (1 - dist / 90)})`;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  
+  animate();
+})();
+</script>
+</body>
+</html>
